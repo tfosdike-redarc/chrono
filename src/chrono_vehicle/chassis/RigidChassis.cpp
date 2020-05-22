@@ -72,9 +72,11 @@ void RigidChassis::Create(const rapidjson::Document& d) {
     m_COM_loc = composite.GetCOM();
 
     // Extract driver position
-    m_driverCsys.pos = ReadVectorJSON(d["Driver Position"]["Location"]);
-    m_driverCsys.rot = ReadQuaternionJSON(d["Driver Position"]["Orientation"]);
-
+    if (d.HasMember("Driver Position")) {
+        m_driverCsys.pos = ReadVectorJSON(d["Driver Position"]["Location"]);
+        m_driverCsys.rot = ReadQuaternionJSON(d["Driver Position"]["Orientation"]);
+    }
+    
     // Read contact information
     if (d.HasMember("Contact")) {
         assert(d["Contact"].HasMember("Materials"));

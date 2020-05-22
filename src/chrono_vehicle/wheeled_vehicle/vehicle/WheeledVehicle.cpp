@@ -66,11 +66,11 @@ void WheeledVehicle::Create(const std::string& filename) {
     // ----------------------------
 
     assert(d.HasMember("Chassis"));
-    assert(d.HasMember("Steering Subsystems"));
-    assert(d.HasMember("Driveline"));
+    //assert(d.HasMember("Steering Subsystems"));
+    //assert(d.HasMember("Driveline"));
     assert(d.HasMember("Axles"));
     assert(d["Axles"].IsArray());
-    assert(d["Steering Subsystems"].IsArray());
+    //assert(d["Steering Subsystems"].IsArray());
 
     // Extract the number of axles.
     m_num_axles = d["Axles"].Size();
@@ -118,6 +118,7 @@ void WheeledVehicle::Create(const std::string& filename) {
     // Create the driveline
     // --------------------
 
+    if (d.HasMember("Driveline"))
     {
         std::string file_name = d["Driveline"]["Input File"].GetString();
         m_driveline = ReadDrivelineWVJSON(vehicle::GetDataFile(file_name));
@@ -205,6 +206,30 @@ void WheeledVehicle::Create(const std::string& filename) {
     }
 
     GetLog() << "Loaded JSON: " << filename.c_str() << "\n";
+    // Create the hitch subsystem
+    // ------------------------------
+    if (d.HasMember("Hitches")) {
+        assert(d["Hitches"].IsArray());
+
+        // Extract the number of steering subsystems
+        m_num_hitches = d["Hitches"].Size();
+
+        m_hitches.resize(m_num_hitches);
+        m_hitchLocations.resize(m_num_hitches);
+        m_hitchRotations.resize(m_num_hitches);
+
+        for (int i = 0; i < m_num_hitches; i++) {
+            std::string file_name = d["Hitches"][i]["Input File"].GetString();
+            std::string hitch_name = d["Hitches"][i]["Name"].GetString();
+            m_hitches[i] = ReadHitchJSON(hitch_name,vehicle::GetDataFile(file_name));
+            m_hitchLocations[i] = ReadVectorJSON(d["Hitches"][i]["Location"]);
+            m_hitchRotations[i].Set(1, 0, 0, 0);
+            if (d["Hitches"][i].HasMember("Orientation")) {
+                m_hitchRotations[i] = ReadQuaternionJSON(d["Hitches"][i]["Orientation"]);
+            }
+        }
+    }
+ 
 }
 
 // -----------------------------------------------------------------------------
@@ -231,10 +256,18 @@ void WheeledVehicle::Initialize(const ChCoordsys<>& chassisPos, double chassisFw
     }
 
     // Initialize the driveline
+    if (m_driveline) {
     m_driveline->Initialize(m_chassis->GetBody(), m_axles, m_driven_axles);
 
     // Sanity check: make sure the driveline can accommodate the number of driven axles.
     assert(m_driveline->GetNumDrivenAxles() == m_driven_axles.size());
+    }
+
+    // Initialize the driveline
+    // Initialize the steering subsystems.
+    for (int i = 0; i < m_num_hitches; i++) {
+        m_hitches[i]->Initialize(m_chassis, m_hitchLocations[i]);
+    }
 }
 
 }  // end namespace vehicle

@@ -32,6 +32,7 @@
 #include "chrono_vehicle/wheeled_vehicle/ChSuspension.h"
 #include "chrono_vehicle/wheeled_vehicle/ChTire.h"
 #include "chrono_vehicle/wheeled_vehicle/ChWheel.h"
+#include "chrono_vehicle/wheeled_vehicle/ChTowHitch.h"
 //
 #include "chrono_vehicle/tracked_vehicle/ChTrackAssembly.h"
 #include "chrono_vehicle/tracked_vehicle/ChDrivelineTV.h"
@@ -87,6 +88,8 @@ CH_VEHICLE_API std::shared_ptr<ChBrake> ReadBrakeJSON(const std::string& filenam
 
 /// Load and return a tire from the specified JSON file.
 CH_VEHICLE_API std::shared_ptr<ChTire> ReadTireJSON(const std::string& filename);
+
+CH_VEHICLE_API std::shared_ptr<ChTowHitch> ReadHitchJSON(const std::string& name, const std::string& filename);
 
 // -----------------------------------------------------------------------------
 

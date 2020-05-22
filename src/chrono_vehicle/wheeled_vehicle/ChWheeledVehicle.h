@@ -35,6 +35,7 @@
 #include "chrono_vehicle/wheeled_vehicle/ChSuspension.h"
 #include "chrono_vehicle/wheeled_vehicle/ChWheel.h"
 #include "chrono_vehicle/wheeled_vehicle/ChTire.h"
+#include "chrono_vehicle/wheeled_vehicle/ChTowHitch.h"
 
 namespace chrono {
 namespace vehicle {
@@ -165,6 +166,10 @@ class CH_VEHICLE_API ChWheeledVehicle : public ChVehicle {
     /// This function should be called only after vehicle initialization.
     void SetWheelVisualizationType(VisualizationType vis);
 
+    /// Set visualization type for the hitch subsystems.
+    /// This function should be called only after vehicle initialization.
+    void SetHitchVisualizationType(VisualizationType vis);
+
     /// Enable/disable collision between the chassis and all other vehicle subsystems.
     /// This only controls collisions between the chassis and the tire systems.
     virtual void SetChassisVehicleCollide(bool state) override;
@@ -218,12 +223,18 @@ class CH_VEHICLE_API ChWheeledVehicle : public ChVehicle {
     /// These include bodies, shafts, joints, spring-damper elements, markers, etc.
     virtual void ExportComponentList(const std::string& filename) const override;
 
+    void Hitch(const std::string& hitchname, ChWheeledVehicle& hitchTo, const std::string& slave_hitchname);
+
+    std::shared_ptr<ChTowHitch> GetTowHitchByName(const std::string hitchname);
+
   protected:
     /// Output data for all modeling components in the vehicle system.
     virtual void Output(int frame, ChVehicleOutput& database) const override;
 
     ChAxleList m_axles;                          ///< list of axle subsystems
     ChSteeringList m_steerings;                  ///< list of steering subsystems
+    ChTowHitchList m_hitches;                       ///< list of tow hitches
+
     std::shared_ptr<ChDrivelineWV> m_driveline;  ///< driveline subsystem
     std::shared_ptr<ChPowertrain> m_powertrain;  ///< associated powertrain system
 };

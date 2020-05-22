@@ -66,6 +66,10 @@ class CH_VEHICLE_API WheeledVehicle : public ChWheeledVehicle {
 
     double m_turn_radius;  // minimum turning radius
     double m_steer_angle;  // maximum steering angle
+
+    int m_num_hitches;
+    std::vector<ChVector<> > m_hitchLocations;      // locations of the steering subsystems relative to chassis
+    std::vector<ChQuaternion<> > m_hitchRotations;  // orientations of the steering subsystems relative to chassis
 };
 
 /// @} vehicle_wheeled

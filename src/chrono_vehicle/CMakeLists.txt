@@ -297,6 +297,8 @@ set(CV_WV_BASE_FILES
     wheeled_vehicle/ChWheel.cpp
     wheeled_vehicle/ChTire.h
     wheeled_vehicle/ChTire.cpp
+    wheeled_vehicle/ChTowHitch.h
+    wheeled_vehicle/ChTowHitch.cpp
 )
 source_group("wheeled_vehicle\\base" FILES ${CV_WV_BASE_FILES})
 
@@ -501,6 +503,12 @@ set(CV_WV_TIRE_FILES
     wheeled_vehicle/tire/ReissnerToroidalTire.cpp
 )
 source_group("wheeled_vehicle\\tire" FILES ${CV_WV_TIRE_FILES})
+
+set(CV_WV_TOWING_FILES
+    wheeled_vehicle/towhitch/TowHitch.h
+    wheeled_vehicle/towhitch/TowHitch.cpp
+)
+source_group("wheeled_vehicle\\towhitch" FILES ${CV_WV_TOWING_FILES})
 
 set(CV_WV_UTILS_FILES
 )
@@ -800,6 +808,7 @@ add_library(ChronoEngine_vehicle SHARED
     ${CV_WV_SUSPENSION_FILES}
     ${CV_WV_TEST_RIG_FILES}
     ${CV_WV_TIRE_FILES}
+    ${CV_WV_TOWING_FILES}
     ${CV_WV_UTILS_FILES}
     ${CV_WV_VEHICLE_FILES}
     ${CV_WV_WHEEL_FILES}
