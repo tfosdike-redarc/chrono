@@ -59,6 +59,8 @@
 #include "chrono_vehicle/wheeled_vehicle/tire/Pac02Tire.h"
 #include "chrono_vehicle/wheeled_vehicle/wheel/Wheel.h"
 //
+#include "chrono_vehicle/wheeled_vehicle/towhitch/TowHitch.h"
+//
 #include "chrono_vehicle/tracked_vehicle/brake/TrackBrakeSimple.h"
 #include "chrono_vehicle/tracked_vehicle/driveline/SimpleTrackDriveline.h"
 #include "chrono_vehicle/tracked_vehicle/driveline/TrackDrivelineBDS.h"
@@ -222,6 +224,17 @@ std::shared_ptr<ChSuspension> ReadSuspensionJSON(const std::string& filename) {
     }
 
     return suspension;
+}
+
+std::shared_ptr<ChTowHitch> ReadHitchJSON(const std::string& name, const std::string& filename) {
+
+    Document d = ReadFileJSON(filename);
+    if (d.IsNull())
+        return nullptr;
+
+    std::shared_ptr<ChTowHitch> hitch = chrono_types::make_shared<TowHitch>(name, d);
+
+    return hitch;
 }
 
 std::shared_ptr<ChSteering> ReadSteeringJSON(const std::string& filename) {

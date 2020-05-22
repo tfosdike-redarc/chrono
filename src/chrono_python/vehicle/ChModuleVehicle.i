@@ -89,6 +89,9 @@
 #include "chrono_vehicle/wheeled_vehicle/brake/ChBrakeSimple.h"
 #include "chrono_vehicle/wheeled_vehicle/brake/BrakeSimple.h"
 
+#include "chrono_vehicle/wheeled_vehicle/ChTowHitch.h"
+#include "chrono_vehicle/wheeled_vehicle/towhitch/TowHitch.h"
+
 #include "chrono_models/ChApiModels.h"
 #include "chrono_models/vehicle/ChVehicleModelDefs.h"
 
@@ -188,6 +191,7 @@ Before adding a shared_ptr, mark as shared ptr all its inheritance tree in the m
 %shared_ptr(chrono::vehicle::BrakeSimple)
 %shared_ptr(chrono::vehicle::ChVehicle)
 %shared_ptr(chrono::vehicle::ChAxle)
+%shared_ptr(chrono::vehicle::ChTowHitch)
 %shared_ptr(chrono::vehicle::ChWheeledVehicle)
 %shared_ptr(chrono::vehicle::WheeledVehicle)
 

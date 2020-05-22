@@ -52,6 +52,7 @@ void ChWheeledVehicle::InitializeTire(std::shared_ptr<ChTire> tire,
 // -----------------------------------------------------------------------------
 void ChWheeledVehicle::InitializePowertrain(std::shared_ptr<ChPowertrain> powertrain) {
     m_powertrain = powertrain;
+    if (m_driveline)
     powertrain->Initialize(m_chassis, m_driveline);
 }
 
@@ -71,7 +72,9 @@ void ChWheeledVehicle::Synchronize(double time, const ChDriver::Inputs& driver_i
     }
 
     // Apply powertrain torque to the driveline's input shaft.
-    m_driveline->Synchronize(powertrain_torque);
+    if (m_driveline) {
+        m_driveline->Synchronize(powertrain_torque);
+    }
 
     // Let the steering subsystems process the steering input.
     for (unsigned int i = 0; i < m_steerings.size(); i++) {
@@ -117,10 +120,12 @@ void ChWheeledVehicle::Advance(double step) {
 // Enable/disable differential locking.
 // -----------------------------------------------------------------------------
 void ChWheeledVehicle::LockAxleDifferential(int axle, bool lock) {
+    if (m_driveline)
     m_driveline->LockAxleDifferential(axle, lock);
 }
 
 void ChWheeledVehicle::LockCentralDifferential(int which, bool lock) {
+    if (m_driveline)
     m_driveline->LockCentralDifferential(which, lock);
 }
 
@@ -144,6 +149,12 @@ void ChWheeledVehicle::SetWheelVisualizationType(VisualizationType vis) {
         for (auto& wheel : axle->m_wheels) {
             wheel->SetVisualizationType(vis);
         }
+    }
+}
+
+void ChWheeledVehicle::SetHitchVisualizationType(VisualizationType vis) {
+    for (auto& hitch : m_hitches) {
+        hitch->SetVisualizationType(vis);
     }
 }
 
@@ -254,7 +265,10 @@ double ChWheeledVehicle::GetSpindleOmega(int axle, VehicleSide side) const {
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 double ChWheeledVehicle::GetDriveshaftSpeed() const {
-    return m_driveline->GetDriveshaftSpeed();
+    if (m_driveline)
+        return m_driveline->GetDriveshaftSpeed();
+    else
+        return 0.0;
 }
 
 // -----------------------------------------------------------------------------
@@ -350,6 +364,15 @@ std::string ChWheeledVehicle::ExportComponentList() const {
     }
     jsonDocument.AddMember("anti-roll bar", arArray, jsonDocument.GetAllocator());
 
+    rapidjson::Value hitchArray(rapidjson::kArrayType);
+    for (auto& hitch : m_hitches) {
+        rapidjson::Document jsonSubDocument(&jsonDocument.GetAllocator());
+        jsonSubDocument.SetObject();
+        hitch->ExportComponentList(jsonSubDocument);
+        hitchArray.PushBack(jsonSubDocument, jsonDocument.GetAllocator());
+    }
+    jsonDocument.AddMember("Hitches", hitchArray, jsonDocument.GetAllocator());
+
     rapidjson::StringBuffer jsonBuffer;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> jsonWriter(jsonBuffer);
     jsonDocument.Accept(jsonWriter);
@@ -396,6 +419,25 @@ void ChWheeledVehicle::Output(int frame, ChVehicleOutput& database) const {
             axle->m_antirollbar->Output(database);
         }
     }
+}
+
+std::shared_ptr<ChTowHitch> ChWheeledVehicle::GetTowHitchByName(const std::string hitchname) {
+    for (int i = 0; i < m_hitches.size(); i++) {
+        GetLog() << __FILE__ << ": " << __LINE__ << m_hitches[i]->GetName() << "\n";
+
+        if (m_hitches[i]->GetName() == hitchname) {
+            return (m_hitches[i]);
+        }
+    }
+    throw(std::exception("no such towhitch"));
+}
+
+void ChWheeledVehicle::Hitch(const std::string& hitchname,
+                           ChWheeledVehicle& hitchTo,
+                           const std::string& slave_hitchname) {
+    std::shared_ptr<ChTowHitch> hitch = GetTowHitchByName(hitchname);
+    std::shared_ptr<ChTowHitch> slaveHitch = hitchTo.GetTowHitchByName(slave_hitchname);
+    hitch->Couple(slaveHitch);
 }
 
 }  // end namespace vehicle
