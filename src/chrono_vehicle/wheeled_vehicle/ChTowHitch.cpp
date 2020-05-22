@@ -49,7 +49,8 @@ void ChTowHitch::AddVisualizationAssets(VisualizationType vis) {
 }
 
 void ChTowHitch::RemoveVisualizationAssets() {
-    m_chassis->GetBody()->GetAssets().clear();
+    // leave removing the hitch visualisation to when the rest of the chassis visualisation is cleared 
+    //m_chassis->GetBody()->GetAssets().clear();
 }
 
 void ChTowHitch::ExportComponentList(rapidjson::Document& jsonDocument) {
