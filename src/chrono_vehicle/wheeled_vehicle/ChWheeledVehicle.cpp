@@ -89,8 +89,10 @@ void ChWheeledVehicle::Synchronize(double time, const ChDriver::Inputs& driver_i
         }
         axle->Synchronize(driver_inputs.m_braking);
     }
+    if (m_ownsSystem) {
+        m_chassis->Synchronize(time);
+    }
 
-    m_chassis->Synchronize(time);
 }
 
 // -----------------------------------------------------------------------------
@@ -417,6 +419,13 @@ void ChWheeledVehicle::Output(int frame, ChVehicleOutput& database) const {
         if (axle->m_antirollbar && axle->m_antirollbar->OutputEnabled()) {
             database.WriteSection(axle->m_antirollbar->GetName());
             axle->m_antirollbar->Output(database);
+        }
+    }
+
+    for (auto& hitch : m_hitches) {
+        if (hitch->OutputEnabled()) {
+            database.WriteSection(hitch->GetName());
+            hitch->Output(database);
         }
     }
 }

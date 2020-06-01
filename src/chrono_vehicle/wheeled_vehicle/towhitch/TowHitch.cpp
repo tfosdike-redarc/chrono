@@ -112,14 +112,13 @@ void TowHitch::Couple(std::shared_ptr<ChTowHitch> slave) {
 
     assert(!m_hitched); // Can't hitch to more than one trailer
     if (!m_hitched) {
-        m_hitch->Initialize(m_chassis->GetBody(), slave->GetChassisBody(), false, ChCoordsys<>(m_hitch_location),
-                            ChCoordsys<>(slave->GetHitchLocation()));
+        m_hitch->Initialize(m_chassis->GetBody(), slave->GetChassisBody(),
+                            ChCoordsys<>(m_hitch_location) >> m_chassis->GetBody()->GetFrame_REF_to_abs());
         m_hitched = true;
         slave->SetHitched(m_hitch);
         // magic to link the two together in the simulation
         ChSystem* system = m_chassis->GetBody()->GetSystem();
-        //system->Add(slave->GetChassisBody());
-        system->Add(m_hitch);
+        system->Add(m_hitch); 
     }
 }
 

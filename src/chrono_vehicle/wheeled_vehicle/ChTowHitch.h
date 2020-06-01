@@ -61,7 +61,10 @@ class CH_VEHICLE_API ChTowHitch : public ChPart {
     /// Synchronize this hitch subsystem.
     void Synchronize(){};
 
-    void SetHitched(std::shared_ptr<ChLinkLock> other_hitch){m_hitch = other_hitch;}
+    void SetHitched(std::shared_ptr<ChLinkLock> other_hitch) {
+        m_hitch = other_hitch;
+        m_hitched = TRUE;
+    }
 
     void Output(ChVehicleOutput& database) ;
 
