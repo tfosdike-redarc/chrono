@@ -449,5 +449,24 @@ void ChWheeledVehicle::Hitch(const std::string& hitchname,
     hitch->Couple(slaveHitch);
 }
 
+std::shared_ptr<ChTowHitch> ChWheeledVehicle::GetTowHitchByName(const std::string hitchname) {
+    for (int i = 0; i < m_hitches.size(); i++) {
+        GetLog() << __FILE__ << ": " << __LINE__ << m_hitches[i]->GetName() << "\n";
+
+        if (m_hitches[i]->GetName() == hitchname) {
+            return (m_hitches[i]);
+        }
+    }
+    throw(std::exception("no such towhitch"));
+}
+
+void ChWheeledVehicle::Hitch(const std::string& hitchname,
+                           ChWheeledVehicle& hitchTo,
+                           const std::string& slave_hitchname) {
+    std::shared_ptr<ChTowHitch> hitch = GetTowHitchByName(hitchname);
+    std::shared_ptr<ChTowHitch> slaveHitch = hitchTo.GetTowHitchByName(slave_hitchname);
+    hitch->Couple(slaveHitch);
+}
+
 }  // end namespace vehicle
 }  // end namespace chrono
